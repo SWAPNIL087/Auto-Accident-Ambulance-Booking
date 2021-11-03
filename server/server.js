@@ -16,8 +16,8 @@ app.use(formData.parse())
 const wmlRoutes = require("./routes/wml");
 const userRoutes = require('./routes/users');
 
-app.use("/api/wml", wmlRoutes);
-app.use('/users',userRoutes);
+// app.use("/api/wml", wmlRoutes);
+app.use('/',userRoutes);
 
 require('./db/conn')
 
