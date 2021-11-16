@@ -37,6 +37,7 @@ const A_Register = ()=>{
                 Dl : Dl,
                 password:password,
             }
+            console.log(container)
             const res = await axios.post('/register_A',{
                 Headers:{'content-Type':'application/json'},
                 json:true,
