@@ -26,11 +26,17 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.pre('save',async function(next){
-    if(this.isModified('password')){
-         this.password = bcrypt.hashSync(this.password,10);
+    if(!this.isModified("password")) {
+        return next();
     }
+    this.password = bcrypt.hashSync(this.password, 10);
     next();
 })
+
+userSchema.methods.comparePassword = async function(plaintext, callback) {
+    console.log("function found!")
+    return callback(null, bcrypt.compareSync(plaintext, this.password));
+};
 
 userSchema.methods.generateAuthToken = async function(){
     try{
