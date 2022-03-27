@@ -5,7 +5,7 @@ import SimpleMap from './Map';
 const UHome = ()=>{
     const location = useGeoLocation();
     
-    console.log(location);
+    console.log(location,'the location here .......');
     
     return(
         <>

@@ -27,7 +27,42 @@ router.post('/register_A',async(req,res)=>{
 })
 
 router.post('/login',async(req,res)=>{
-    console.log('recieved the login details')
+    console.log('recieved the login details',req.body.body)
+    try{
+        const {email,password} = req.body.body
+
+        if (!email || !password){
+            res.send('all inputs are required!')
+        }
+
+        const userLogin = await User.findOne({email:email});
+
+        if (!userLogin){
+            res.send('No user Found!')
+        }
+        else{
+            const isMatch = await bcrypt.compare(password,userLogin.password)
+            console.log(userLogin.password)
+            console.log(bcrypt.hashSync(password,10))
+            const token = await userLogin.generateAuthToken();
+
+            res.cookie("jwtoken",token,{
+                expires:new Date(Date.now() + 259200000), // 3 days
+                httpOnly:true
+            })
+
+            if (isMatch===false){
+                res.send('Invalid credentials')
+            }
+            else{
+                res.send('Login Success')
+            }
+        }
+    }
+    catch(err){
+        console.log(err)
+        res.send('login Failed!')
+    }
     
 })
 
