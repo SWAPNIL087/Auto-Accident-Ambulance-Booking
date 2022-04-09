@@ -6,35 +6,50 @@ import PubNub from 'pubnub';
 
 
 const SimpleMap = (props)=>{
+    
     const [userLat,setUserLat] = useState(props.lat)
     const [userLon,setUserLon] = useState(props.log)
-    const [ambulance_locations,setAL] = useState([])
+    const [ambulance_locations,setAL] = useState({})
+    const [locations,setlocations] = useState([])
+
     var pubnub = new PubNub({
         publishKey: 'pub-c-b24c62a8-9d96-487d-b7f0-22637f9404a3',
         subscribeKey: 'sub-c-c5db0af2-2e9f-11ec-83d0-f27e7ede0273',
     });
 
-
-    pubnub.addListener({
-        message:function(m){
-            var tem = m.message.text.split('-')
-            var arr = ambulance_locations
-            var c = arr.indexOf(tem)
-            console.log(c,tem)
-            if (c == -1){
-                arr.push(tem)
-                setAL([...ambulance_locations,arr])
-                console.log(tem,'/////////')
-                document.getElementById("newMessage").innerHTML+="<br>"+m.message.text;
-            }
-        }
-    })
-
+    // let final_Alocs = []
     pubnub.subscribe({
         channels:['Locations']
     });
+
+    pubnub.addListener({
+        message:function(m){
+            console.log("listening.....")
+            var location_shared = m.message.data.location.split('-')
+            var arr = ambulance_locations
+            // var c = arr.indexOf(location_shared)
+            if (location_shared[0]!=undefined && location_shared[1]!='' && location_shared[2]!=''){
+                arr[location_shared[0]]=[location_shared[1],location_shared[2]]
+                console.log(arr,'the arr destructured to ambulance_locations')
+                setAL([...ambulance_locations,arr])
+            }            
+        }
+    })
     
-    // let ambulance_locations = [[23.116444 ,83.196121],[23.113333,83.200556]]
+    let final_Alocs = []
+
+    for(var key in ambulance_locations){
+        console.log('------------------------------------')
+        console.log(key + " " + ambulance_locations[key]);
+        var lat = ambulance_locations[key][0];
+        var long = ambulance_locations[key][1];
+        console.log("lat => ",lat," long => ",long)
+        var x = distance(userLat,userLon,lat ,long,'K')
+        if (x<=5){
+            final_Alocs.push([lat,long])
+        }
+    }
+
 
     function distance(lat1, lon1, lat2, lon2, unit) {
         if ((lat1 == lat2) && (lon1 == lon2)) {
@@ -58,22 +73,7 @@ const SimpleMap = (props)=>{
         }
     }
 
-    let final_Alocs = []
-    for (var i=0;i<ambulance_locations.length;i++){
-        var lat = ambulance_locations[i][0];
-        var long = ambulance_locations[i][1];
-        var x = distance(userLat,userLon,lat ,long,'K')
-        // console.log(x)
-        if (x<=5){
-            final_Alocs.push([lat,long])
-        }
-        // console.log(final_Alocs)
-        
-    }
-
-    // console.log(final_Alocs)
-
-
+    
     const mapNodeIcon = L.divIcon({
         html: `<div style="display: flex;">
           <img src="${Ambulance}" width="45px"/> 
@@ -82,7 +82,6 @@ const SimpleMap = (props)=>{
         popupAnchor: [0, -19],
         shadowSize:   [50, 64],
         shadowAnchor: [4, 62],
-        
       });
 
     return (
@@ -106,12 +105,13 @@ const SimpleMap = (props)=>{
                             Ambulance-{idx+1}  location.
                         </Popup>
                     </Marker>
+
                     </div>
                     )
                 })
             }
         </MapContainer>
-        
+    
         </>
 
     )

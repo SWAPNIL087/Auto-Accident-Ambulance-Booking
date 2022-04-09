@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
+import { useHistory } from 'react-router'
 import axios from 'axios'
 const Login = ()=>{
+    const history = useHistory()
     const [email,setemail] = useState()
     const[password,setpassword] = useState()
 
@@ -17,7 +19,11 @@ const Login = ()=>{
                 body:{email:email,password:password}
             })
         
-            console.log(res.data)
+            console.log(res.data.message)
+            if (res.data.message === 'login successfull!'){
+                localStorage.setItem('isLoggedIn','true')
+                history.push('/Ambulance_Home')
+            }
         }
     }
 

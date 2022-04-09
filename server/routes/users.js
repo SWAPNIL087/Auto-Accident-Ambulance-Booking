@@ -5,6 +5,11 @@ const bcrypt = require('bcryptjs')
 const User = require('../models/users')
 const authenticate = require('../middleware/authenticate')
 
+const comparePassword = async function(plaintext, callback) {
+    console.log("function found!")
+    return callback(null, bcrypt.compareSync(plaintext, this.password));
+};
+
 router.post('/login',async(req,res)=>{
     console.log('login credentials recieved')
     console.log(req.body.body);
@@ -21,12 +26,17 @@ router.post('/login',async(req,res)=>{
             res.send('No user Found!')
         }
         else{
+            const token = await userLogin.generateAuthToken();
             userLogin.comparePassword(req.body.body.password, (error, match) => {
                 if(!match) {
                     return response.status(400).send({ message: "The password is invalid" });
                 }
             });
-            res.send({ message: "login successfull!" });
+            res.cookie("jwtoken",token,{
+                expires:new Date(Date.now() + 259200000), // 3 days
+                httpOnly:true
+            })
+            res.send({ message: "login successfull!", DriverName : userLogin.name , DriverLicense:userLogin.Dl });
         
         }
     }
@@ -58,6 +68,15 @@ router.post('/register_A',async(req,res)=>{
     }
 })
 
+router.get('/logout',authenticate,async(req,res)=>{
+    console.log('logout')
+    res.clearCookie('jwtoken',{path:'/'})
+    res.send('User Logout')
+})
 
+router.get('/Ambulance_login',authenticate,async(req,res)=>{
+    console.log('recieved the after login info')
+    res.send(req.rootUser);
+})
 
 module.exports = router;

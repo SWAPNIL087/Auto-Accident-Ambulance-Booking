@@ -38,11 +38,14 @@ userSchema.methods.comparePassword = async function(plaintext, callback) {
     return callback(null, bcrypt.compareSync(plaintext, this.password));
 };
 
+
 userSchema.methods.generateAuthToken = async function(){
+    console.log('generating token!')
     try{
         let token = jwt.sign({_id:this._id},process.env.SECRET_KEY);
         this.tokens = this.tokens.concat({token:token});
         await this.save();
+        console.log(token,'token generated from model section')
         return token;
     }
     catch(err){
