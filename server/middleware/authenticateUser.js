@@ -1,15 +1,16 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/users')
+const User2 = require('../models/users2')
 
 
-const Authenticate = async(req,res,next)=>{
+const AuthenticateUser = async(req,res,next)=>{
 
+    console.log("verifyin the user authentication")
     try{
         // console.log('authentification under process!')
         const token = req.cookies.jwtoken;
-        console.log(token);
+        // console.log(token);
         if(token==undefined){
-            console.log('here-->')
+            console.log('token not generated/expired.')
             throw new Error('User not found')
         }
 
@@ -17,9 +18,10 @@ const Authenticate = async(req,res,next)=>{
 
 
 
-        const rootUser = await User.findOne({_id:verifyToken._id,"tokens.token":token})
-
+        const rootUser = await User2.findOne({_id:verifyToken._id,"tokens.token":token})
+        console.log(rootUser,"printing the rootUser")
         if (!rootUser){
+            console.log("cannot find the user")
             throw new Error('User not found')
         }
 
@@ -36,4 +38,4 @@ const Authenticate = async(req,res,next)=>{
     }
 }
 
-module.exports = Authenticate
+module.exports = AuthenticateUser

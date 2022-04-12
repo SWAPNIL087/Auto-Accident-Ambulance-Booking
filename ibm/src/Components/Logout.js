@@ -16,6 +16,8 @@ const Logout = ()=>{
         }).then((res)=>{
             localStorage.removeItem('isLoggedIn')
             localStorage.setItem('isLoggedIn','false')
+            localStorage.removeItem('isUserLoggedIn')
+            localStorage.setItem('isUserLoggedIn','false')
             history.push('/',{replace:true})
         }).catch((err)=>{
             console.log(err)

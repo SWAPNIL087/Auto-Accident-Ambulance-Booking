@@ -3,11 +3,45 @@ import useGeoLocation from './useGeoLocation';
 import SimpleMap from './Map';
 import PubNub from 'pubnub';
 import axios from 'axios'
+import { useHistory } from 'react-router-dom';
+import ClipLoader from "react-spinners/ClipLoader";
 
 const UHome = ()=>{
     const [data,setdata] = useState({})
     const location = useGeoLocation();
+    const [loading,setloading] = useState(true);
     
+    const history = useHistory()
+
+    useEffect(async()=>{
+        setloading(false)
+        console.log("custom load called")
+        try{
+            const res = await fetch('/user_login',{
+                method:'GET',
+                headers:{
+                    Accept: "application/json",
+                    "Content-Type":"application/json"
+                },
+                json:true,
+                credentials:"include"
+            })
+
+            const data = await res.json()
+            if (!res.status===200 || !data){
+                const error = new Error(res.error);
+                history.push('/userLogin')
+                throw error;
+            } 
+            setloading(true)
+        }
+        catch(err){
+            console.log(err)
+            console.log('invalid user')
+            history.push('/userLogin')
+        }
+    },[])
+
     console.log(location,'the location here .......');
     var pubnub = new PubNub({
         publishKey: 'pub-c-b24c62a8-9d96-487d-b7f0-22637f9404a3',
@@ -30,12 +64,12 @@ const UHome = ()=>{
         }
     })
 
-    const BookAmbulance = async(key,lat,lng)=>{
-        console.log(key)
+    const BookAmbulance = async(mail,lat,lng)=>{
+        console.log(mail) 
         const res = await axios.post('/bookAmbulance',{
             Headers:{'content-Type':'application/json'},
             json:true,
-            body:{key:key,lat:lat,lng:lng}
+            body:{mail:mail,lat:lat,lng:lng}
         })
     
         console.log(res.data.message)
@@ -48,6 +82,9 @@ const UHome = ()=>{
     return(
         <>
         {
+            loading?
+            <div>
+                {
             location.loaded?
             <div>
                 <h3 className='text-success'>
@@ -95,6 +132,14 @@ const UHome = ()=>{
                 <h1>Loading......</h1>
             </div>
         }
+            </div>
+            :
+            <div  className='Loader'>
+                <ClipLoader color={'#16f1cd'} loading={true} size={50}/>
+                <p>Loading</p>
+            </div>
+        }
+        
         </>
     )
 }

@@ -1,9 +1,10 @@
+//Users2 is for customer
 const mongoose =require('mongoose');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 const userSchema = new mongoose.Schema({
-    "mail":{
+    'mail':{
         type:String
     },
     'name':{
@@ -12,19 +13,9 @@ const userSchema = new mongoose.Schema({
     "password":{
         type:String
     },
-    'age':{
-        type:String
-    },
-    "Dl":{
-        type:String
-    },
     "Status":{
-        type:String //Available/busy
+        type:String // available/busy
     },
-    "BookingReq":[{
-        "lat":{type:String},
-        "lng":{type:String}
-    }],
     tokens:[{
         token:{
             type:String
@@ -41,18 +32,18 @@ userSchema.pre('save',async function(next){
 })
 
 userSchema.methods.comparePassword = async function(plaintext, callback) {
-    console.log("function found!")
+    // console.log("function found!")
     return callback(null, bcrypt.compareSync(plaintext, this.password));
 };
 
 
 userSchema.methods.generateAuthToken = async function(){
-    console.log('generating token!')
+    // console.log('generating token!')
     try{
         let token = jwt.sign({_id:this._id},process.env.SECRET_KEY);
         this.tokens = this.tokens.concat({token:token});
         await this.save();
-        console.log(token,'token generated from model section')
+        console.log(token,'token generated for userlogin from model section')
         return token;
     }
     catch(err){
@@ -61,6 +52,6 @@ userSchema.methods.generateAuthToken = async function(){
     }
 }
 
-const users = mongoose.model('USER',userSchema)
+const users2 = mongoose.model('USER2',userSchema)
 
-module.exports = users;
+module.exports = users2;
