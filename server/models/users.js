@@ -18,6 +18,13 @@ const userSchema = new mongoose.Schema({
     "Dl":{
         type:String
     },
+    "Status":{
+        type:String //Empty,requested,approved,
+    },
+    "BookingReq":[{
+        "lat":{type:String},
+        "lng":{type:String}
+    }],
     tokens:[{
         token:{
             type:String

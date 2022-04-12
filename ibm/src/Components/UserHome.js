@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useGeoLocation from './useGeoLocation';
 import SimpleMap from './Map';
 import PubNub from 'pubnub';
+import axios from 'axios'
 
 const UHome = ()=>{
     const [data,setdata] = useState({})
@@ -20,16 +21,29 @@ const UHome = ()=>{
 
     pubnub.addListener({
         message:function(m){
-            // console.log("listening driver details.....",m.message.data.driverDetails)
             var driverName = m.message.data.driverDetails.name
             var DriverLicense = m.message.data.driverDetails.Dl
-            // console.log(driverName,DriverLicense)
             var tem = {}
-            tem[driverName]=DriverLicense
+            tem[m.message.data.driverDetails.mail]=[driverName,DriverLicense]
             console.log(tem)
             setdata(tem)
         }
     })
+
+    const BookAmbulance = async(key,lat,lng)=>{
+        console.log(key)
+        const res = await axios.post('/bookAmbulance',{
+            Headers:{'content-Type':'application/json'},
+            json:true,
+            body:{key:key,lat:lat,lng:lng}
+        })
+    
+        console.log(res.data.message)
+        // if (res.data.message === 'login successfull!'){
+        //     localStorage.setItem('isLoggedIn','true')
+        //     history.push('/Ambulance_Home')
+        // }
+    }
 
     return(
         <>
@@ -48,21 +62,29 @@ const UHome = ()=>{
                     
                         <div className='col-lg-6 col-12 mt-4'>
                             <h5>Ambulances near you</h5>
+                            <hr/>
+                            <ol>
                             {
                                 Object.entries(data).map(([key,value])=>{
                                     return (
-                                        <div>
-                                            <ol className='bg-warning'>
-                                                <li className="text-left">
-                                                    <span>DriverName - {key}</span><br></br>
-                                                    <span> DriverLicense - {value}</span>
+                                        <div class="container" key = {key}>
+                                            
+                                                <li className="text-left m-0">
+                                                        <div className='row'>
+                                                            <div className='col-8'>
+                                                                <span><b>DriverName</b> - {value[0]}</span><br></br>
+                                                                <span><b> DriverLicense</b> - {value[1]}</span>
+                                                            </div>
+                                                            <div className='text-center col-4 mt-2'>
+                                                                <button onClick={()=>BookAmbulance(key,location.coordinates.lat,location.coordinates.lng)} className='btn btn-primary'> Book</button>
+                                                            </div>
+                                                        </div>
                                                 </li>
-                                            </ol>
                                         </div>
                                     );
                                   })
                             }
-                            
+                            </ol>
                         </div>
                     </div>
 

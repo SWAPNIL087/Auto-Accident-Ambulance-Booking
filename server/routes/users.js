@@ -20,15 +20,17 @@ router.post('/login',async(req,res)=>{
             res.send('all inputs are required!')
         }
 
-        const userLogin = await User.findOne({email:email});
+        const userLogin = await User.findOne({mail:email});
 
         if (!userLogin){
+            console.log('no user found')
             res.send('No user Found!')
         }
         else{
             const token = await userLogin.generateAuthToken();
             userLogin.comparePassword(req.body.body.password, (error, match) => {
                 if(!match) {
+                    console.log("invalid password")
                     return response.status(400).send({ message: "The password is invalid" });
                 }
             });
@@ -36,12 +38,13 @@ router.post('/login',async(req,res)=>{
                 expires:new Date(Date.now() + 259200000), // 3 days
                 httpOnly:true
             })
+            console.log("login successfull")
             res.send({ message: "login successfull!", DriverName : userLogin.name , DriverLicense:userLogin.Dl });
         
         }
     }
     catch(err){
-        console.log(err)
+        console.log("login failed due to this err = >",err)
         res.send('login Failed!')
     }
 })
@@ -77,6 +80,49 @@ router.get('/logout',authenticate,async(req,res)=>{
 router.get('/Ambulance_login',authenticate,async(req,res)=>{
     console.log('recieved the after login info')
     res.send(req.rootUser);
+})
+
+router.post('/bookAmbulance',authenticate,async(req,res)=>{
+    console.log(req.body.body.key,"bookAmbulance in server end")
+    const {key,lat,lng} =  req.body.body
+    console.log(key,lat,lng)
+    //key is the email of the ambulance that is booked
+    // lat and lng are the location coordinated of the user who booked the ambulance
+
+    const filter = { mail: key };
+    const update = { Status: "Requested" };
+
+    let doc = await User.findOneAndUpdate(filter, update, {
+        new: true
+      });
+
+    var newData = {
+        lat:lat,
+        lng:lng
+    }
+    User.updateOne(
+        filter, 
+        { $push: { BookingReq: newData } },
+        function(err, result) {
+            if (err) {
+                console.log(err)
+              res.send(err);
+            } else {
+                console.log(result)
+              res.send(result);
+            }
+          }
+        
+    );
+    console.log(doc.Status)
+
+})
+
+router.post('/Booking_Requests',authenticate,async(req,res)=>{
+    const {key} = req.body.body;
+    var data = await User.findOne({mail:key})
+    console.log(data.BookingReq)
+    res.send(data.BookingReq)
 })
 
 module.exports = router;
