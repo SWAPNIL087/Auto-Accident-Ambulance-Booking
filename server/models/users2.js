@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     "Status":{
         type:String // available/busy
     },
+    "BookingsMade":[{
+        "DriverMail":{type:String},
+        "Status":{type:String}, //requested, Rejected, Confirmed
+    }],
     tokens:[{
         token:{
             type:String

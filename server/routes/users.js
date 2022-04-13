@@ -153,13 +153,55 @@ router.get('/user_login',authenticateUser,async(req,res)=>{
 })
 
 router.post('/bookAmbulance',authenticateUser,async(req,res)=>{
-    const {mail,lat,lng} =  req.body.body
-    console.log(mail,lat,lng)
+    const {mail,lat,lng,currUser} =  req.body.body
+    console.log(mail,lat,lng,currUser)
     // implement code to send the booking req to specific ambulance driver
     // update that specific driver's booking req array
     // and change the book button to requested.
+    try{
 
+    var newData = {
+        UserName:currUser,
+        lat:lat,
+        lng:lng
+    }
 
+    User.findOneAndUpdate(
+        { mail: mail }, 
+        { 
+            $push: { "BookingReq": newData },
+            $set:{"Status":"Requested"},
+        }
+        ,
+        {safe:true,upset:true},
+        function(err,model){
+            console.log(err)
+        }
+    );
+
+    newUserData = {
+        DriverMail:mail,
+        Status:'requested',
+
+    }
+
+    User2.findOneAndUpdate(
+        { mail: newData.UserName }, 
+        { 
+            $push: { "BookingsMade": newUserData },
+            $set:{"Status":"Requested"},
+        }
+        ,
+        {safe:true,upset:true},
+        function(err,model){
+            console.log(err)
+        }
+    );
+    res.status(201).json({message:'Requested'})
+    }
+    catch(err){
+        console.log(err,"failed to add booking request!")
+    }
     //then implement the logic in bookingrequest for ambulance driver.
 
 })
@@ -169,6 +211,40 @@ router.post('/Booking_Requests',authenticate,async(req,res)=>{
     var data = await User.findOne({mail:key})
     console.log(data.BookingReq)
     res.send(data.BookingReq)
+})
+
+router.post('/reject_request',authenticate,async(req,res)=>{
+    console.log(req.body.body.UserName,"recieved details of rejections!");
+    const {UserName,driverName} = req.body.body
+    // console.log(req.rootUser)
+    try{
+        
+    //     User2.update(
+    //         { mail: UserName ,'BookingsMade.DriverMail':driverName}, 
+    //         {
+    //             $set: {
+    //                 'BookingsMade.$.Status':'rejected',
+    //                     }
+    //     }, function(err){
+    //         console.log(err)
+    //     }
+    // )   
+    User2.updateOne({ mail: UserName }, { "$pull": { "BookingsMade": { "DriverMail": driverName } }}, { safe: true, multi:true }, function(err, obj) {
+        console.log(err);
+    })
+        
+    //now remove this request from driver's list as well...
+        
+    User.updateOne({ mail: driverName }, { "$pull": { "BookingReq": { "UserName": UserName } }}, { safe: true, multi:true }, function(err, obj) {
+        //do something smart
+        console.log(err);
+    })
+
+        res.status(201).json({message:'Rejected request'})
+        }
+        catch(err){
+            console.log(err,"failed to reject the booking!")
+        }
 })
 
 module.exports = router;

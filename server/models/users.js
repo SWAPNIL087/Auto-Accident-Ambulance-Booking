@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema({
     },
     "BookingReq":[{
         "lat":{type:String},
-        "lng":{type:String}
+        "lng":{type:String},
+        "UserName":{type:String},
     }],
     tokens:[{
         token:{

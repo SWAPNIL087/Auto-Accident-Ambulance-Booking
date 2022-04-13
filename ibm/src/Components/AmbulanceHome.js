@@ -35,7 +35,7 @@ const AmbulanceHome = ()=>{
             var store = {}
             for(var key in data.BookingReq){
                 var temdata = data.BookingReq[key]
-                store[temdata._id] = [temdata.lat,temdata.lng]
+                store[temdata._id] = [temdata.lat,temdata.lng,temdata.UserName]
             }
             console.log(store,'------------------???')
             setBookingReq(store)
@@ -116,8 +116,34 @@ const AmbulanceHome = ()=>{
         }
     }
 
-    const ViewReq = ()=>{
-        console.log("use modal here")
+    const ViewReq = async(UserName,driverName,AmbLat,AmbLng,UserLat,UserLng)=>{
+        console.log("details to view map - ",AmbLat,AmbLng,UserLat,UserLng);
+        history.push({
+            pathname:'/AmbulanceMap',
+            state:{
+                AmbLat:AmbLat,
+                AmbLng:AmbLng,
+                UserLat:UserLat,
+                UserLng:UserLng
+            }
+        })
+    }
+
+    const Reject = async(UserName,driverName)=>{
+        console.log('rejected the req.',UserName,driverName)
+        try{
+            const res = await axios.post('/reject_request',{
+                Headers:{'content-Type':'application/json'},
+                json:true,
+                body:{UserName:UserName,driverName:driverName}
+            })
+        
+            console.log(res.data.message)
+        }
+        catch(err){
+            console.log("rejection failed")
+            console.log(err)
+        }
     }
     return(
         <>
@@ -149,6 +175,16 @@ const AmbulanceHome = ()=>{
                         <br/>
                         <h5>Booking requests</h5>
                         <hr/>
+                        <div className='float-left'>
+                            <b>S.N.</b>
+                            <b className='ml-5'>Name</b>
+                        </div>
+                        <b> Distance</b>
+                        
+                        <div className="float-right">
+                            <b>Actions</b>
+                        </div>
+                        <hr/>
                         <ol>
                         {
                             Object.entries(BookingReq).map(([key,value])=>{
@@ -156,9 +192,18 @@ const AmbulanceHome = ()=>{
 
                                 <div key = {key}>
                                     <li>
-                                    <b>Distance</b> - {distance(location.coordinates.lat,location.coordinates.lng,value[0],value[1])} KM
-                                    <button onClick={()=>ViewReq()} className='m-2 btn btn-primary'>View</button>
+                                    <div className='float-left ml-5'>
+                                        <b>{value[2]}</b>
+                                    </div>
+                                    <b> {distance(location.coordinates.lat,location.coordinates.lng,value[0],value[1]).toString().substr(0,6)} KM</b>
+                                    
+                                    <div className="float-right">
+                                        <button onClick={()=>ViewReq(value[2],DriverDetails.mail,location.coordinates.lat,location.coordinates.lng,value[0],value[1])} className='m-2 btn btn-primary'>View</button>
+                                        <button onClick={()=>Reject(value[2],DriverDetails.mail)} className='m-2 btn btn-danger'>Reject</button>
+                                    </div>
                                     </li>
+                                    <br/>
+                                    <hr/>
                                 </div>
                                 )
                             })

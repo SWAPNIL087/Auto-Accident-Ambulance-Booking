@@ -9,6 +9,7 @@ import Login from './Components/Login';
 import Logout from './Components/Logout';
 import UserLogin from './Components/UserLogin';
 import User_Register from './Components/UserRegister';
+import SimpleMap2 from './Components/Map2';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       <Route exact path='/Ambulance_Home' component={AmbulanceHome}/>
       <Route exact path='/ambulance_register' component={A_Register}/>
       <Route exact path='/userLogin' component={UserLogin}/>
+      <Route exact path='/AmbulanceMap' component={SimpleMap2}/>
       
       {/* <Route component={PageNotFound} /> */}
       </Switch>
