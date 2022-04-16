@@ -216,27 +216,12 @@ router.post('/Booking_Requests',authenticate,async(req,res)=>{
 router.post('/reject_request',authenticate,async(req,res)=>{
     console.log(req.body.body.UserName,"recieved details of rejections!");
     const {UserName,driverName} = req.body.body
-    // console.log(req.rootUser)
     try{
-        
-    //     User2.update(
-    //         { mail: UserName ,'BookingsMade.DriverMail':driverName}, 
-    //         {
-    //             $set: {
-    //                 'BookingsMade.$.Status':'rejected',
-    //                     }
-    //     }, function(err){
-    //         console.log(err)
-    //     }
-    // )   
     User2.updateOne({ mail: UserName }, { "$pull": { "BookingsMade": { "DriverMail": driverName } }}, { safe: true, multi:true }, function(err, obj) {
         console.log(err);
     })
         
-    //now remove this request from driver's list as well...
-        
     User.updateOne({ mail: driverName }, { "$pull": { "BookingReq": { "UserName": UserName } }}, { safe: true, multi:true }, function(err, obj) {
-        //do something smart
         console.log(err);
     })
 
@@ -245,6 +230,60 @@ router.post('/reject_request',authenticate,async(req,res)=>{
         catch(err){
             console.log(err,"failed to reject the booking!")
         }
+})
+
+router.post('/accept_request',authenticate,async(req,res)=>{
+    // console.log(req.body.body.UserName,"recieved details of rejections!");
+    const {UserName,driverName} = req.body.body
+    console.log("acceptance request recieved",UserName,driverName);
+    
+    try{
+
+        //removing this req from queue in Ambulance Driver's end since its accepted now
+        User.updateOne({ mail: driverName }, { "$pull": { "BookingReq": { "UserName": UserName } }}, { safe: true, multi:true }, function(err, obj) {
+            console.log(err);
+        })
+
+        newUserData = {
+            DriverMail:driverName,
+            Status:'accepted',
+        }
+    
+        //updating the status as accepted in User End
+        User2.findOneAndUpdate(
+            {mail:UserName,'BookingsMade.DriverMail':driverName},
+            {
+                $set:{
+                    'BookingsMade.$.Status':'accepted'
+                }
+            },
+            function(err,model){
+                if(err){
+                    console.log(err);
+                    res.send('failed')
+                }
+            }
+    )
+
+        res.status(201).json({message:'Accepted'})
+
+    
+    }
+    catch(err){
+        console.log(err,"failed to reject the booking!")
+    }
+})
+
+router.post('/complete_trip',AuthenticateUser,async(req,res)=>{
+    const {UserName,driverName} = req.body.body
+    console.log("completance request recieved",UserName,driverName);
+    
+    User2.updateOne({ mail: UserName }, { "$pull": { "BookingsMade": { "DriverMail": driverName } }}, { safe: true, multi:true }, function(err, obj) {
+        console.log(err);
+    })
+
+        res.status(201).json({message:'completed'})
+
 })
 
 module.exports = router;

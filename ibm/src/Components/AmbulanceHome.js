@@ -10,6 +10,7 @@ const AmbulanceHome = ()=>{
     const [loading,setloading] = useState(true)
     const [DriverDetails,storeDriverDetails] = useState([])
     const[BookingReq,setBookingReq] = useState({})
+    const [AcceptedReq,setAcceptedReq] = useState([])
     
     const customLoad = async()=>{
         setloading(false)
@@ -75,13 +76,6 @@ const AmbulanceHome = ()=>{
         
     }
 
-    // pubnub.addListener({
-    //     message:function(m){
-    //         console.log('location shared!')
-    //         // document.getElementById("newMessage").innerHTML+="<br>"+m.message.text;
-    //     }
-    // })
-
     pubnub.subscribe({
         channels:['Locations']
     });
@@ -124,7 +118,10 @@ const AmbulanceHome = ()=>{
                 AmbLat:AmbLat,
                 AmbLng:AmbLng,
                 UserLat:UserLat,
-                UserLng:UserLng
+                UserLng:UserLng,
+                UserName:UserName,
+                driverName:driverName,
+                UserEnd:true
             }
         })
     }

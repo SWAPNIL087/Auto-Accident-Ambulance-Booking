@@ -61,15 +61,20 @@ const UHome = ()=>{
         message:function(m){
             var driverName = m.message.data.driverDetails.name
             var DriverLicense = m.message.data.driverDetails.Dl
+            var location_shared = m.message.data.location.split('-')
+            
             tem[m.message.data.driverDetails.mail]=[driverName,DriverLicense]
             BookingsMade.forEach(Booking => {
                 for (let key in Booking) {
                     // console.log(`${key}: ${Booking[key]}`);
                     if(Booking['DriverMail'] === m.message.data.driverDetails.mail && tem[m.message.data.driverDetails.mail].length<=2){
                         tem[m.message.data.driverDetails.mail].push(Booking['Status'])
+                        tem[m.message.data.driverDetails.mail].push(location_shared)
+
                     }
-                    else if(Booking['DriverMail'] === m.message.data.driverDetails.mail && tem[m.message.data.driverDetails.mail].length==3){
+                    else if(Booking['DriverMail'] === m.message.data.driverDetails.mail && tem[m.message.data.driverDetails.mail].length==4){
                         tem[m.message.data.driverDetails.mail][2]=(Booking['Status'])
+                        tem[m.message.data.driverDetails.mail].push(location_shared)
                     }
                 }
             });
@@ -85,6 +90,22 @@ const UHome = ()=>{
             body:{mail:mail,lat:lat,lng:lng,currUser:currUser}
         })
     
+    }
+
+    const viewConfirmed = async(AmbLat,AmbLng,UserLat,UserLng,driverName)=>{
+        console.log("details to view map - ",AmbLat,AmbLng,UserLat,UserLng);
+        history.push({
+            pathname:'/AmbulanceMap',
+            state:{
+                AmbLat:AmbLat,
+                AmbLng:AmbLng,
+                UserLat:UserLat,
+                UserLng:UserLng,
+                UserEnd:false,
+                UserName:currUser,
+                driverName:driverName
+            }
+        })
     }
 
     return(
@@ -131,10 +152,9 @@ const UHome = ()=>{
                                             </div>
                                         );
                                     }
-                                    else if(value[2]==='confirmed'){
+                                    else if(value[2]==='accepted'){
                                         return (
                                             <div class="container" key = {key}>
-                                                
                                                     <li className="text-left m-0">
                                                             <div className='row'>
                                                                 <div className='col-8'>
@@ -142,8 +162,8 @@ const UHome = ()=>{
                                                                     <span><b> DriverLicense</b> - {value[1]}</span>
                                                                 </div>
                                                                 <div className='text-center col-4 mt-2'>
-                                                                    
-                                                                    <b className='text-success'>confirmed</b>
+                                                                    {/* <p>{value[3]}</p> */}
+                                                                    <button className="btn btn-success" onClick={()=>viewConfirmed(value[3][1],value[3][2],location.coordinates.lat,location.coordinates.lng,key)}>confirmed</button>
                                                                 </div>
                                                             </div>
                                                     </li>
