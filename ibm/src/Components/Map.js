@@ -76,7 +76,7 @@ const SimpleMap = (props)=>{
     
     const mapNodeIcon = L.divIcon({
         html: `<div style="display: flex;">
-          <img src="${Ambulance}" width="45px"/> 
+          <img src="${Ambulance}" height="35px" width="35px"/> 
         </div>`,
         iconAnchor: [10, 10],
         popupAnchor: [0, -19],
