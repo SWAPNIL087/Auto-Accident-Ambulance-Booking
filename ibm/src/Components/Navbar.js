@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useHistory,Redirect } from 'react-router-dom';
+import Logo from './Images/Logo.png'
 
 const Navbar = ()=>{
     var isloggedIn = localStorage.getItem('isLoggedIn');
@@ -9,7 +10,7 @@ const Navbar = ()=>{
     if(isloggedIn === 'true'){
         return(
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Navbar</a>
+            <a class="navbar-brand" href="#"><img height="25px" width="50px" src={Logo}></img> FastAmbulance</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -19,15 +20,6 @@ const Navbar = ()=>{
                 <li class="nav-item active">
                     <NavLink className="nav-link" to="/Ambulance_Home">Home</NavLink>
                 </li>
-                {/* <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Login
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <NavLink class="dropdown-item" to="/login">Login as User</NavLink><br/>
-                        <NavLink class="dropdown-item" to="/userLogin">Login as Driver</NavLink>
-                    </div>
-                </li> */}
                 <li>
                     <NavLink className="nav-link" to="/logout">logout</NavLink>
                 </li>
@@ -39,7 +31,7 @@ const Navbar = ()=>{
     else if (isUserLoggedIn==='true'){
         return(
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Navbar</a>
+            <a class="navbar-brand" href="#"><img height="25px" width="50px" src={Logo}></img> FastAmbulance</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -49,18 +41,12 @@ const Navbar = ()=>{
                 <li class="nav-item active">
                     <NavLink className="nav-link" to="/User_Home">Home</NavLink>
                 </li>
-                {/* <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Login
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <NavLink class="dropdown-item" to="/login">Login as User</NavLink><br/>
-                        <NavLink class="dropdown-item" to="/userLogin">Login as Driver</NavLink>
-                    </div>
-                </li> */}
                 <li>
-                    <NavLink className="nav-link" to="/logout">logout</NavLink>
+                    <NavLink className="nav-link" to="/logoutUser">logout</NavLink>
                 </li>
+                </ul>
+                <ul className="navbar-nav ml-auto">
+                    <b className='text-light'>Welcome {localStorage.getItem('UserName')}</b>
                 </ul>
             </div>
         </nav>
@@ -70,7 +56,7 @@ const Navbar = ()=>{
         return(
         <>
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <a class="navbar-brand" href="#">Navbar</a>
+                <a class="navbar-brand" href="#"><img height="25px" width="50px" src={Logo}></img> FastAmbulance</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>

@@ -6,6 +6,7 @@ const Login = ()=>{
     const history = useHistory()
     const [email,setemail] = useState()
     const[password,setpassword] = useState()
+    const [message,setMessage] = useState('')
 
     const login = async(e)=>{
         e.preventDefault()
@@ -25,16 +26,19 @@ const Login = ()=>{
                 localStorage.setItem('isLoggedIn','true')
                 history.push('/Ambulance_Home')
             }
+            else{
+                setMessage("Invalid credentials Please Try again!")
+            }
         }
     }
 
     return(
         <>
-        <div className='container mt-5'>
+        <div className='container' style={{marginTop:"10%"}}>
             <div className='row col-lg-5 col-md-8 col-10 m-auto registration-box'>
             <div className='col-10 w-100 m-auto'>
                 <h4 className='text-center text-success font-weight-bold m-0'>Ambulance Login</h4>
-                
+                <alert className='text-danger'>{message}</alert>
             </div>
             <div className='col-10 w-100 m-auto'>
                 <p className='text-left font-weight-bold m-0'>Email</p>

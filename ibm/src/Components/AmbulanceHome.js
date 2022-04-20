@@ -4,6 +4,9 @@ import ClipLoader from "react-spinners/ClipLoader";
 import PubNub from 'pubnub';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios'
+import "./sideBar.css"
+import $ from 'jquery'; 
+
 
 const AmbulanceHome = ()=>{
     const history = useHistory()
@@ -34,12 +37,19 @@ const AmbulanceHome = ()=>{
                 throw error;
             } 
             var store = {}
+            var store2 = {}
             for(var key in data.BookingReq){
                 var temdata = data.BookingReq[key]
-                store[temdata._id] = [temdata.lat,temdata.lng,temdata.UserName]
+                if (temdata.Status==='requested'){
+                    store[temdata._id] = [temdata.lat,temdata.lng,temdata.UserName]
+                }
+                else if(temdata.Status === 'accepted'){
+                    store2[temdata._id] = [temdata.lat,temdata.lng,temdata.UserName]
+                }
             }
             console.log(store,'------------------???')
             setBookingReq(store)
+            setAcceptedReq(store2)
             // setBookingReq(data.BookingReq)
             storeDriverDetails(data)
             setloading(true)
@@ -110,7 +120,7 @@ const AmbulanceHome = ()=>{
         }
     }
 
-    const ViewReq = async(UserName,driverName,AmbLat,AmbLng,UserLat,UserLng)=>{
+    const ViewReq = async(UserName,driverName,AmbLat,AmbLng,UserLat,UserLng,Status)=>{
         console.log("details to view map - ",AmbLat,AmbLng,UserLat,UserLng);
         history.push({
             pathname:'/AmbulanceMap',
@@ -121,7 +131,8 @@ const AmbulanceHome = ()=>{
                 UserLng:UserLng,
                 UserName:UserName,
                 driverName:driverName,
-                UserEnd:true
+                UserEnd:true,
+                Status:Status
             }
         })
     }
@@ -142,12 +153,17 @@ const AmbulanceHome = ()=>{
             console.log(err)
         }
     }
+    const toggleEvent = (e)=>{
+        e.preventDefault();
+        console.log("toggle event")
+        $("#wrapper").toggleClass("toggled");
+    }
     return(
         <>
             <div>
                 {loading?
                 <div>
-                    <h3 className='text-left p-4'>Ambulance Home</h3>
+                    <h4 className='text-right p-4'>Welcome {DriverDetails.name}</h4>
                     <div className='container'>
                         <div className='row'>
                             <div className='float-right  w-100 col-12'>
@@ -168,52 +184,102 @@ const AmbulanceHome = ()=>{
                     {
                         sendInput()
                     }
-                    <div className='container'>
-                        <br/>
-                        <h5>Booking requests</h5>
-                        <hr/>
-                        <div className='float-left'>
-                            <b>S.N.</b>
-                            <b className='ml-5'>Name</b>
-                        </div>
-                        <b> Distance</b>
-                        
-                        <div className="float-right">
-                            <b>Actions</b>
-                        </div>
-                        <hr/>
-                        <ol>
-                        {
-                            Object.entries(BookingReq).map(([key,value])=>{
-                                return(
-
-                                <div key = {key}>
-                                    <li>
-                                    <div className='float-left ml-5'>
-                                        <b>{value[2]}</b>
-                                    </div>
-                                    <b> {distance(location.coordinates.lat,location.coordinates.lng,value[0],value[1]).toString().substr(0,6)} KM</b>
-                                    
-                                    <div className="float-right">
-                                        <button onClick={()=>ViewReq(value[2],DriverDetails.mail,location.coordinates.lat,location.coordinates.lng,value[0],value[1])} className='m-2 btn btn-primary'>View</button>
-                                        <button onClick={()=>Reject(value[2],DriverDetails.mail)} className='m-2 btn btn-danger'>Reject</button>
-                                    </div>
-                                    </li>
-                                    <br/>
+                    <div className=''>
+                        <div id="wrapper">
+                            <div id="sidebar-wrapper">
+                                <ul class="sidebar-nav">
+                                    <b className='mt-5'>Accepted Requests</b>
                                     <hr/>
+
+                                    {
+                                        Object.entries(AcceptedReq).map(([key,value])=>{
+                                            return(
+
+                                            <div key = {key}>
+
+                                                        <b>{value[2]}</b>
+                                                        <button onClick={()=>ViewReq(value[2],DriverDetails.mail,location.coordinates.lat,location.coordinates.lng,value[0],value[1],false)} className='m-2 btn btn-primary'>View</button>
+
+
+                                                <br/>
+                                                <hr/>
+                                            </div>
+                                            )
+                                        })
+                                    }
+
+                                </ul>
+                            </div>
+                            <div id="page-content-wrapper">
+                                <div class="position-fixed">
+                                <a href="#menu-toggle" class="btn btn-success float-right" onClick={toggleEvent} id="menu-toggle">Accepted Requests</a>
                                 </div>
-                                )
-                            })
-                        }
-                        </ol>
+                            </div>
+                        </div>
                     </div>
+                    <div className='container'>
+                        <div className='row'>
+                            <div className='col-12'>
+                                    <br/>
+                                <h5 className='text-danger'>Booking requests</h5>
+                                <hr/>
+                                <div className='float-left'>
+                                    <b>S.N.</b>
+                                    <b className='ml-5'>Name</b>
+                                </div>
+                                <b> Distance</b>
+                                
+                                <div className="float-right">
+                                    <b>Actions</b>
+                                </div>
+                                <hr/>
+                                <ol>
+                                {
+                                    Object.entries(BookingReq).map(([key,value])=>{
+                                        return(
+
+                                        <div key = {key}>
+                                            <li>
+                                            <div className='float-left ml-5'>
+                                                <b>{value[2]}</b>
+                                            </div>
+                                            <b> {distance(location.coordinates.lat,location.coordinates.lng,value[0],value[1]).toString().substr(0,6)} KM</b>
+                                            
+                                            <div className="float-right">
+                                                <button onClick={()=>ViewReq(value[2],DriverDetails.mail,location.coordinates.lat,location.coordinates.lng,value[0],value[1],true)} className='m-2 btn btn-primary'>View</button>
+                                                <button onClick={()=>Reject(value[2],DriverDetails.mail)} className='m-2 btn btn-danger'>Reject</button>
+                                            </div>
+                                            </li>
+                                            <br/>
+                                            <hr/>
+                                        </div>
+                                        )
+                                    })
+                                }
+                                </ol>
+                            </div>
+
+
+
+
+
+
+
+                            
+                        </div>
+                    </div>
+                    
+
                 </div>
                 :
-                <div  className='Loader'>
+                <div  className='Loader' style={{marginTop:'200px'}}>
                     <ClipLoader color={'#16f1cd'} loading={true} size={50}/>
                     <p>Loading</p>
                 </div>
                 }
+            </div>
+            <div style={{marginTop:"200px"}}>
+            
             </div>
         </>
 

@@ -8,6 +8,8 @@ const UserLogin = ()=>{
     const history = useHistory()
     const [email,setemail] = useState()
     const[password,setpassword] = useState()
+    const [message,setMessage] = useState('')
+
 
     const login = async(e)=>{
         e.preventDefault()
@@ -25,17 +27,22 @@ const UserLogin = ()=>{
             console.log(res.data.message)
             if (res.data.message === 'login successfull!'){
                 localStorage.setItem('isUserLoggedIn','true')
+                localStorage.setItem('UserName',res.data.UserName)
                 history.push('/User_Home')
+            }
+            else{
+                setMessage("Invalid credentials Please Try again!")    
             }
         }
     }
 
     return (
         <>
-            <div className='container mt-5'>
+            <div className='container' style={{marginTop:"10%"}}>
             <div className='row col-lg-5 col-md-8 col-10 m-auto registration-box'>
             <div className='col-10 w-100 m-auto'>
                 <h4 className='text-center text-primary font-weight-bold m-0'> User Login</h4>
+                <alert className='alert text-danger'>{message}</alert>
                 
             </div>
             <div className='col-10 w-100 m-auto'>

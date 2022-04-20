@@ -82,7 +82,8 @@ router.post('/user_login',async(req,res)=>{
                 httpOnly:true
             })
             console.log("login successfull")
-            res.send({ message: "login successfull!" });
+            // console.log(userLogin)
+            res.send({ message: "login successfull!",UserName:userLogin.name });
         
         }
     }
@@ -142,12 +143,18 @@ router.get('/logout',authenticate,async(req,res)=>{
     res.send('User Logout')
 })
 
+router.get('/logoutUser',AuthenticateUser,async(req,res)=>{
+    console.log('logout User......')
+    res.clearCookie('jwtoken',{path:'/'})
+    res.send('User Logout')
+})
+
 router.get('/Ambulance_login',authenticate,async(req,res)=>{
     console.log('recieved the after login info');
     res.send(req.rootUser);
 })
 
-router.get('/user_login',authenticateUser,async(req,res)=>{
+router.get('/userLogin',authenticateUser,async(req,res)=>{
     console.log('recieved the login info for user');
     res.send(req.rootUser);
 })
@@ -239,10 +246,20 @@ router.post('/accept_request',authenticate,async(req,res)=>{
     
     try{
 
-        //removing this req from queue in Ambulance Driver's end since its accepted now
-        User.updateOne({ mail: driverName }, { "$pull": { "BookingReq": { "UserName": UserName } }}, { safe: true, multi:true }, function(err, obj) {
-            console.log(err);
-        })
+        User.findOneAndUpdate(
+            {mail:driverName,'BookingReq.UserName':UserName},
+            {
+                $set:{
+                    'BookingReq.$.Status':'accepted'
+                }
+            },
+            function(err,model){
+                if(err){
+                    console.log(err);
+                    res.send('failed')
+                }
+            }
+    )
 
         newUserData = {
             DriverMail:driverName,
@@ -278,6 +295,10 @@ router.post('/complete_trip',AuthenticateUser,async(req,res)=>{
     const {UserName,driverName} = req.body.body
     console.log("completance request recieved",UserName,driverName);
     
+    User.updateOne({ mail: driverName }, { "$pull": { "BookingReq": { "UserName": UserName } }}, { safe: true, multi:true }, function(err, obj) {
+        console.log(err);
+    })
+
     User2.updateOne({ mail: UserName }, { "$pull": { "BookingsMade": { "DriverMail": driverName } }}, { safe: true, multi:true }, function(err, obj) {
         console.log(err);
     })

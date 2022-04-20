@@ -18,7 +18,7 @@ const UHome = ()=>{
         setloading(false)
         // console.log("custom load called")
         try{
-            const res = await fetch('/user_login',{
+            const res = await fetch('/userLogin',{
                 method:'GET',
                 headers:{
                     Accept: "application/json",
@@ -116,11 +116,9 @@ const UHome = ()=>{
                 {
             location.loaded?
             <div>
-                <h3 className='text-success'>
-                    Welcome To Fast Ambulance
-                </h3>
+                
                 <br></br>
-                <div className='container'>
+                <div className='container' style={{marginTop:"5%"}}>
                     <div className='row'>
                         <div className='col-lg-6 col-12 border map'>
                             <SimpleMap lat={location.coordinates.lat} log={location.coordinates.lng}/>
@@ -197,8 +195,9 @@ const UHome = ()=>{
                 </div>
             </div>
             :
-            <div>
-                <h1>Loading......</h1>
+            <div style={{marginTop:'200px'}}>
+                <ClipLoader color={'#16f1cd'} loading={true} size={50}/>
+                <p>Loading</p>
             </div>
         }
             </div>

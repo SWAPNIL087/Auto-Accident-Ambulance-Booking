@@ -1,0 +1,82 @@
+.box{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    border-radius: 20px;
+}
+
+.box:hover{
+    transform: scale(1.04);
+    cursor: pointer;
+}
+
+.bg-text {
+    background-color: rgb(86, 144, 231); /* Black w/opacity/see-through */
+    color: white;
+    font-weight: bold;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    border-radius: 20px;
+    z-index: 2;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .bg-image {
+    filter: blur(8px);
+    -webkit-filter: blur(4px);
+  
+  }
+
+  .information{
+      font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+  }
+  
+  .headingColor {
+      color:blue;
+  }
+
+  .mainHeading{
+      color:rgb(235, 110, 0)
+  }
+
+  .glow{
+    color: #fff;
+  text-shadow:
+  0 0 7px rgb(189, 166, 139),
+  0 0 10px #fff,
+  0 0 21px #fff,
+  0 0 42px rgb(255, 179, 0),
+  0 0 82px rgb(255, 213, 0),
+  0 0 92px rgb(255, 204, 0),
+  0 0 102px rgb(255, 208, 0),
+  0 0 151px rgb(255, 200, 0);
+  }
+
+  .glowPeach{
+    color: rgb(255, 132, 65);
+    text-shadow:
+      0 0 7px rgb(189, 166, 139),
+      0 0 10px #fff,
+      0 0 21px #fff,
+      0 0 42px rgb(255, 179, 0),
+      0 0 82px rgb(255, 213, 0),
+      0 0 92px rgb(255, 204, 0),
+      0 0 102px rgb(255, 208, 0),
+      0 0 151px rgb(255, 200, 0);
+  }
+
+  .glowPink{
+    color: rgb(251, 90, 179);
+    text-shadow:
+      0 0 7px rgb(189, 166, 139),
+      0 0 10px #fff,
+      0 0 21px #fff,
+      0 0 42px rgb(255, 0, 144),
+      0 0 82px rgb(255, 0, 144),
+      0 0 92px rgb(255, 0, 144),
+      0 0 102px rgb(255, 0, 144),
+      0 0 151px rgb(255, 0, 144);
+  }
+
+
+.card{
+  border-radius: 20px !important;
+}

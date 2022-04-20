@@ -8,7 +8,10 @@ const User_Register = ()=>{
     const [password,setpassword] = useState()
     const [mail,setmail] = useState()
     const [confirmp,setcp] = useState()
-    
+    const[message,setMessage] = useState('')
+    const[message2,setMessage2] = useState('')
+
+
     const cpassword = (e)=>{
         if(e.target.value != password){
             $('.pass_msg').removeClass('d-none');
@@ -41,6 +44,14 @@ const User_Register = ()=>{
                 body:container
             })
             console.log(res)
+            if (res.data.message === 'User registered successfuly'){
+                setMessage('User Registered Successfully please Login to continue!')
+                setMessage2('')
+            }
+            else{
+                setMessage('')
+                setMessage2('Failed to Register User!')
+            }
         }
     }
 
@@ -52,6 +63,9 @@ const User_Register = ()=>{
                 <div className='row registration-box m-auto col-lg-8 col-md-8 col-10'>
                 <div className='col-10 w-100 m-auto'>
                     <h4 className='text-center text-primary font-weight-bold m-0'>Register User</h4>
+                    <alert className='alert text-danger'>{message2}</alert>
+                    <alert className='alert text-success'>{message}</alert>
+
                 </div>
                     <div className='col-10 p-2 w-100 m-auto'>
                         <p className='text-left font-weight-bold m-0'>Full Name</p>

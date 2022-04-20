@@ -20,6 +20,7 @@ const SimpleMap2 = (props) => {
     const [AmbLng,setAmbLng] = useState(location.state.AmbLng)
     const [BoolReqAccept,setBoolReqAccept] = useState(false)
     const [UserEnd,setUserEnd] = useState(location.state.UserEnd)
+    const [Status] = useState(location.state.Status)
 
     const acceptRequest = async()=>{
         console.log("accept the booking.............");
@@ -91,7 +92,16 @@ const SimpleMap2 = (props) => {
                             <>
                                 {UserEnd ?
                                 <>
-                                <button onClick={()=>acceptRequest()} className='btn btn-success m-2'>Accept Booking</button>
+                                 {
+                                     Status?
+                                     <>
+                                     <button onClick={()=>acceptRequest()} className='btn btn-success m-2'>Accept Booking</button>
+                                     </>
+                                     :
+                                     <>
+                                     </>
+
+                                 }
                                 </>
 
                                     :

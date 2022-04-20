@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
         "lat":{type:String},
         "lng":{type:String},
         "UserName":{type:String},
+        "Status":{
+            type:String,
+            default:"requested"
+        }, //requested,accepted
     }],
     tokens:[{
         token:{
